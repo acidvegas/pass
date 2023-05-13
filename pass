@@ -1,0 +1,132 @@
+#!/bin/sh
+# posix password manager - developed by acidvegas (https://git.acid.vegas/pass)
+
+umask 077
+
+export GPG_TTY=$(tty)
+
+GPG_ID="acidvegas" # change me
+GPG_OPTS="-q --yes --compress-algo=none --no-encrypt-to --batch"
+METHOD="copy"
+PASS_DIR=$HOME/.secrets
+
+if [ -z $EDITOR ]; then
+	export EDITOR=nano
+fi
+
+mkdir -p $PASS_DIR
+
+edit() {
+	if [ -d /dev/shm ] && [ -w /dev/shm ] && [ -x /dev/shm ]; then
+		tmp=$(mktemp -u /dev/shm/pw.XXXXXXXXXX)
+		trap "rm -rf $tmp" EXIT
+	else
+		echo "error: /dev/shm does not exist or is missing permissions required for temporary files"
+		exit 1
+	fi
+	if [ -f $PASS_DIR/$1.gpg ]; then
+		gpg -d -o $tmp $GPG_OPTS $PASS_DIR/$1.gpg || exit 1
+		$EDITOR $tmp
+		if [ ! "$(gpg -d $GPG_OPTS $PASS_DIR/$1.gpg)" = "$(cat $tmp)" ]; then
+			gpg -e -r $GPG_ID -o $PASS_DIR/$1.gpg $GPG_OPTS $tmp
+		fi
+	else
+		$EDITOR $tmp
+		if [ -f $tmp ]; then
+			mkdir -p $(dirname $PASS_DIR/$1)
+			gpg -e -r $GPG_ID -o $PASS_DIR/$1.gpg $GPG_OPTS $tmp
+		fi
+	fi
+}
+
+generate() {
+	case ${1#[-+]} in
+		*[!0-9]* | '') echo "error: invalid number" ;;
+		*)             cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $1 | head -n 1 ;;
+	esac
+}
+
+menu() {
+	cwd=$PASS_DIR
+	while :
+	do
+		if [ $cwd = $PASS_DIR ]; then
+			cmd=$(ls -p $cwd | dmenu "$@")
+		else
+			cmd=$($(echo ".." && ls -p $cwd) | dmenu "$@")
+		fi
+		if [ -z $cmd ]; then
+			break
+		elif [ $cmd = '..' ]; then
+			cwd=$(dirname $cwd)
+		elif [ -d $cwd/$cmd ]; then
+			cwd=$cwd/$cmd
+		elif [ -f $cwd/$cmd ]; then
+			if [ $METHOD = "copy" ]; then
+				export PINENTRY_USER_DATA="dmenu" | gpg -d $GPG_OPTS $cwd/$cmd | dmenu "$@" | xclip -selection clipboard
+				sleep 3 && xclip -selection clipboard /dev/null
+			elif [ $METHOD = "type" ]; then
+				export PINENTRY_USER_DATA="dmenu" | gpg -d $GPG_OPTS $cwd/$cmd | dmenu "$@" | xdotool type --delay 3 "$D"
+			fi
+			break
+		fi
+	done
+}
+
+otp() {
+	if [ -f $PASS_DIR/$1.gpg ]; then
+		otp_uri=$(gpg -d $GPG_OPTS $PASS_DIR/$1.gpg | tail -n 1) || exit 1
+		if [ "$(echo $otp_uri | head -c 10)" = "otpauth://" ]; then
+			secret=$(echo "$otp_uri" | sed 's/.*secret=//' | cut -f1 -d'&')
+			oathtool -b --totp $secret
+		else
+			echo "error: OTP URI invalid or not found for '$1'"
+		fi
+	else
+		echo "error: '$1' does not exist"
+	fi
+}
+
+show() {
+	if [ -d $PASS_DIR/$1 ]; then
+		echo $1
+		tree -NCl --noreport $PASS_DIR/$1 3>&- | tail -n +2 | sed -E 's/\.gpg(\x1B\[[0-9]+m)?( ->|$)/\1\2/g'
+	elif [ -f $PASS_DIR/$1.gpg ]; then
+		gpg -d $GPG_OPTS $PASS_DIR/$1.gpg
+	else
+		echo "error: '$1' does not exist"
+	fi
+}
+
+# Main
+[ ! $(command -v gpg)  ] && echo "error: missing required packaged 'gpg'"  && exit 1
+[ ! $(command -v tree) ] && echo "error: missing required packaged 'tree'" && exit 1
+if [ "$#" = '1' ]; then
+	if [ $1 = 'menu' ]; then
+		[ ! $(command -v dmenu)          ] && echo "error: missing required packaged 'dmenu'"          && exit 1
+		[ ! $(command -v pinentry)       ] && echo "error: missing required packaged 'pinentry'"       && exit 1
+		[ ! $(command -v pinentry-dmenu) ] && echo "error: missing required packaged 'pinentry-dmenu'" && exit 1
+		if [ $METHOD = "copy" ]; then
+			[ ! $(command -v xclip)      ] && echo "error: missing required packaged 'xclip'"          && exit 1
+		elif [ $METHOD = 'type' ]; then
+			[ ! $(command -v xdotool)    ] && echo "error: missing required packaged 'xdotool'"        && exit 1
+		else
+			echo "error: invalid menu method (must be 'copy' or 'type')"
+			exit 1
+		fi
+		menu
+	else
+		show $1
+	fi
+elif [ "$#" = '2' ]; then
+	if [ "$1" = 'edit' ]; then
+		edit $2
+	elif [ "$1" = 'gen' ]; then
+		generate $2
+	elif [ "$1" = 'otp' ]; then
+		[ ! $(command -v oathtool) ] && echo "error: missing required packaged 'oathtool'" && exit 1
+		otp $2
+	fi
+else
+	tree -NCl --noreport $PASS_DIR 3>&- | tail -n +2 | sed -E 's/\.gpg(\x1B\[[0-9]+m)?( ->|$)/\1\2/g'
+fi
