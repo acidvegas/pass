@@ -17,13 +17,17 @@ fi
 mkdir -p $PASS_DIR
 
 edit() {
+	local template="pw.XXXXXXXXXXXXX"
 	if [ -d /dev/shm ] && [ -w /dev/shm ] && [ -x /dev/shm ]; then
-		tmp=$(mktemp -u /dev/shm/pw.XXXXXXXXXX)
-		trap "rm -rf $tmp" EXIT
+		tmp=$(mktemp -d /dev/shm/$template)
 	else
-		echo "error: /dev/shm does not exist or is missing permissions required for temporary files"
-		exit 1
+		echo "warning: /dev/shm does not exist or is missing permissions required for temporary files (using insecure fallback to /tmp directory)"
+		tmp=$(mktemp -d /tmp/$template)
 	fi
+	rm_tmp() {
+		rm -rf "$tmp"
+	}
+	trap rm_tmp EXIT
 	if [ -f $PASS_DIR/$1.gpg ]; then
 		gpg -d -o $tmp $GPG_OPTS $PASS_DIR/$1.gpg || exit 1
 		$EDITOR $tmp
