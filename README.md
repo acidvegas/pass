@@ -7,7 +7,7 @@ Similar to [password-store](https://git.zx2c4.com/password-store/about/), but wr
 
 ## Requirements
 - [gpg](https://gnupg.org/)
-- tree
+- [tree](https://oldmanprogrammer.net/source.php?dir=projects/tree)
 
 ###### Optional Requirements
 - [nano](https://www.nano-editor.org/)                      *(required only if environment variable `$EDITOR` is not set)*
@@ -20,8 +20,8 @@ Similar to [password-store](https://git.zx2c4.com/password-store/about/), but wr
 ## Config
 Edit the source code to change these settings:
 
-| Setting  | Description                                                                                                        |
-| -------- | ------------------------------------------------------------------------------------------------------------------ |
+| Setting    | Description                                                                                                      |
+| ---------- | ---------------------------------------------------------------------------------------------------------------- |
 | `GPG_ID`   | Default GPG key ID to use for encrypting/decrypting                                                              |
 | `GPG_OPTS` | Do not edit this unless you know what you are doing                                                              |
 | `METHOD`   | Method used for the menu *("copy" will use xclip to copy passwords & "type" will use xdotool to type passwords)* |
@@ -57,8 +57,7 @@ fi
 ```
 Make it executable with `chmod +x $HOME/.gnupg/pinentry-wrapper` and then edit your `$HOME/.gnupg/gpg-agent.conf` to include `pinentry-program $HOME/.gnupg/pinentry-wrapper`.
 
-## Mirrors
-- [acid.vegas](https://git.acid.vegas/pass)
-- [GitHub](https://github.com/acidvegas/pass)
-- [GitLab](https://gitlab.com/acidvegas/pass)
-- [SuperNETs](https://git.supernets.org/acidvegas/pass)
+___
+
+###### Mirrors
+[acid.vegas](https://git.acid.vegas/pass) • [GitHub](https://github.com/acidvegas/pass) • [GitLab](https://gitlab.com/acidvegas/pass) • [SuperNETs](https://git.supernets.org/acidvegas/pass)

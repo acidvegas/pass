@@ -68,7 +68,7 @@ menu() {
 		elif [ -f $cwd/$cmd ]; then
 			if [ $METHOD = "copy" ]; then
 				export PINENTRY_USER_DATA="dmenu" | gpg -d $GPG_OPTS $cwd/$cmd | dmenu "$@" | xclip -selection clipboard
-				sleep 3 && xclip -selection clipboard /dev/null
+				sleep 3 && xclip -selection clipboard /dev/nul
 			elif [ $METHOD = "type" ]; then
 				export PINENTRY_USER_DATA="dmenu" | gpg -d $GPG_OPTS $cwd/$cmd | dmenu "$@" | xdotool type --delay 3 "$D"
 			fi
@@ -103,17 +103,17 @@ show() {
 }
 
 # Main
-[ ! $(command -v gpg)  ] && echo "error: missing required packaged 'gpg'"  && exit 1
-[ ! $(command -v tree) ] && echo "error: missing required packaged 'tree'" && exit 1
+command -v gpg  >/dev/null || { echo "error: missing required package 'gpg'";  exit 1; }
+command -v tree >/dev/null || { echo "error: missing required package 'tree'"; exit 1; }
 if [ "$#" = '1' ]; then
 	if [ $1 = 'menu' ]; then
-		[ ! $(command -v dmenu)          ] && echo "error: missing required packaged 'dmenu'"          && exit 1
-		[ ! $(command -v pinentry)       ] && echo "error: missing required packaged 'pinentry'"       && exit 1
-		[ ! $(command -v pinentry-dmenu) ] && echo "error: missing required packaged 'pinentry-dmenu'" && exit 1
+		command -v dmenu          >/dev/null || { echo "error: missing required package 'dmenu'";          exit 1; }
+		command -v pinentry       >/dev/null || { echo "error: missing required package 'pinentry'";       exit 1; }
+		command -v pinentry-dmenu >/dev/null || { echo "error: missing required package 'pinentry-dmenu'"; exit 1; }
 		if [ $METHOD = "copy" ]; then
-			[ ! $(command -v xclip)      ] && echo "error: missing required packaged 'xclip'"          && exit 1
+			command -v dmenu >/dev/null || { echo "error: missing required package 'xclip'"; exit 1; }
 		elif [ $METHOD = 'type' ]; then
-			[ ! $(command -v xdotool)    ] && echo "error: missing required packaged 'xdotool'"        && exit 1
+			command -v xdotool >/dev/null || { echo "error: missing required package 'xdotool'"; exit 1; }
 		else
 			echo "error: invalid menu method (must be 'copy' or 'type')"
 			exit 1
@@ -128,7 +128,7 @@ elif [ "$#" = '2' ]; then
 	elif [ "$1" = 'gen' ]; then
 		generate $2
 	elif [ "$1" = 'otp' ]; then
-		[ ! $(command -v oathtool) ] && echo "error: missing required packaged 'oathtool'" && exit 1
+		command -v oathtool >/dev/null || { echo "error: missing required package 'oathtool'"; exit 1; }
 		otp $2
 	fi
 else
