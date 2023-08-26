@@ -2,7 +2,6 @@
 # posix password manager - developed by acidvegas (https://git.acid.vegas/pass)
 
 umask 077
-
 export GPG_TTY=$(tty)
 
 GPG_ID="acidvegas" # change me
@@ -19,10 +18,10 @@ mkdir -p $PASS_DIR
 edit() {
 	local template="pw.XXXXXXXXXXXXX"
 	if [ -d /dev/shm ] && [ -w /dev/shm ] && [ -x /dev/shm ]; then
-		tmp=$(mktemp -d /dev/shm/$template)
+		tmp=$(mktemp /dev/shm/$template)
 	else
 		echo "warning: /dev/shm does not exist or is missing permissions required for temporary files (using insecure fallback to /tmp directory)"
-		tmp=$(mktemp -d /tmp/$template)
+		tmp=$(mktemp /tmp/$template)
 	fi
 	rm_tmp() {
 		rm -rf "$tmp"
