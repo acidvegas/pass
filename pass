@@ -53,7 +53,7 @@ menu() {
 	while :
 	do
 		if [ $cwd = $PASS_DIR ]; then
-			cmd=$(ls -p $cwd | dmenu -l 5 "$@")
+			cmd=$(ls -p $cwd | sed 's/\.gpg$//' | dmenu -l 5 "$@")
 		else
 			cmd=$({ echo ".."; ls -p $cwd | sed 's/\.gpg$//'; } | dmenu -l 5 "$@")
 		fi
