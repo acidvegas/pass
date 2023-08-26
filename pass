@@ -1,12 +1,11 @@
 #!/bin/sh
 # posix password manager - developed by acidvegas (https://git.acid.vegas/pass)
-
 umask 077
 export GPG_TTY=$(tty)
 
 GPG_ID="acidvegas" # change me
 GPG_OPTS="-q --yes --compress-algo=none --no-encrypt-to --batch"
-METHOD="copy"
+METHOD="type"
 PASS_DIR=$HOME/.secrets
 
 if [ -z $EDITOR ]; then
@@ -54,9 +53,9 @@ menu() {
 	while :
 	do
 		if [ $cwd = $PASS_DIR ]; then
-			cmd=$(ls -p $cwd | dmenu "$@")
+			cmd=$(ls -p $cwd | dmenu -l 5 "$@")
 		else
-			cmd=$($(echo ".." && ls -p $cwd) | dmenu "$@")
+			cmd=$({ echo ".."; ls -p $cwd | sed 's/\.gpg$//'; } | dmenu -l 5 "$@")
 		fi
 		if [ -z $cmd ]; then
 			break
