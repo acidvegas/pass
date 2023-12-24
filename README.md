@@ -11,11 +11,11 @@ Similar to [password-store](https://git.zx2c4.com/password-store/about/), but wr
 
 ###### Optional Requirements
 - [nano](https://www.nano-editor.org/)                      *(required only if environment variable `$EDITOR` is not set)*
-- [dmenu](https://tools.suckless.org/dmenu/)                *(required for menu)*
 - [pinentry-dmenu](https://github.com/ritze/pinentry-dmenu) *(required for menu)*
 - [xclip](https://github.com/astrand/xclip)                 *(required for menu to copy passwords)*
 - [xdotool](https://github.com/jordansissel/xdotool)        *(required for menu to type passwords)*
 - [oath-toolit](https://www.nongnu.org/oath-toolkit/)       *(required for 2FA)*
+- [gnupg2-scdaemon](https://linux.die.net/man/1/scdaemon)   *(required for smartcard support)*
 
 ## Config
 Edit the source code to change these settings:
@@ -56,6 +56,23 @@ else
 fi
 ```
 Make it executable with `chmod +x $HOME/.gnupg/pinentry-wrapper` and then edit your `$HOME/.gnupg/gpg-agent.conf` to include `pinentry-program $HOME/.gnupg/pinentry-wrapper`.
+
+## SmartCard Support
+Using a [Smart Card](https://en.wikipedia.org/wiki/Smart_card) such as a [YubiKey](https://www.yubico.com/) with pass simply requires setting up your GPG key to recognize your card.
+
+First, you will need to install `scdaemon` & enable the service on your system in order to recognize your smartcards. After you set this up, you can check if your card is recognized with the `gpg --card-status` command.
+
+Edit your GPG key with `gpg --edit-key [Your-Key-ID]` & run the follow commands in the interactive session:
+```
+key 1
+keytocard
+save
+```
+
+
+## Ideas & TODO
+- Hash file names for obsurity *(`pass rm <entry>` & `pass mv <entry>` since file names will be hashed)*
+- Better way than using a hard coded `GPG_ID` & maybe on the fly `METHOD` selection
 
 ___
 

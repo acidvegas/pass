@@ -18,6 +18,8 @@ edit() {
 	local template="pw.XXXXXXXXXXXXX"
 	if [ -d /dev/shm ] && [ -w /dev/shm ] && [ -x /dev/shm ]; then
 		tmp=$(mktemp /dev/shm/$template)
+	elif [ ! -z $PREFIX ] && [ -d $PREFIX/tmp ]; then
+		tmp=$(mktemp $PREFIX/usr/tmp/$template)
 	else
 		echo "warning: /dev/shm does not exist or is missing permissions required for temporary files (using insecure fallback to /tmp directory)"
 		tmp=$(mktemp /tmp/$template)
