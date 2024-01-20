@@ -69,12 +69,10 @@ keytocard
 save
 ```
 
-
 ## Ideas & TODO
 - Hash file names for obsurity *(`pass rm <entry>` & `pass mv <entry>` since file names will be hashed)*
 - Better way than using a hard coded `GPG_ID` & maybe on the fly `METHOD` selection
 
 ___
 
-###### Mirrors
-[acid.vegas](https://git.acid.vegas/pass) • [GitHub](https://github.com/acidvegas/pass) • [GitLab](https://gitlab.com/acidvegas/pass) • [SuperNETs](https://git.supernets.org/acidvegas/pass)
+###### Mirrors for this repository: [acid.vegas](https://git.acid.vegas/pass) • [SuperNETs](https://git.supernets.org/acidvegas/pass) • [GitHub](https://github.com/acidvegas/pass) • [GitLab](https://gitlab.com/acidvegas/pass) • [Codeberg](https://codeberg.org/acidvegas/pass)

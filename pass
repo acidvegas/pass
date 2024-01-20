@@ -15,11 +15,11 @@ fi
 mkdir -p $PASS_DIR
 
 edit() {
-	local template="pw.XXXXXXXXXXXXX"
+	template="pw.XXXXXXXXXXXXX"
 	if [ -d /dev/shm ] && [ -w /dev/shm ] && [ -x /dev/shm ]; then
 		tmp=$(mktemp /dev/shm/$template)
 	elif [ ! -z $PREFIX ] && [ -d $PREFIX/tmp ]; then
-		tmp=$(mktemp $PREFIX/usr/tmp/$template)
+		tmp=$(mktemp $PREFIX/usr/tmp/$template) # For users on Termux
 	else
 		echo "warning: /dev/shm does not exist or is missing permissions required for temporary files (using insecure fallback to /tmp directory)"
 		tmp=$(mktemp /tmp/$template)
