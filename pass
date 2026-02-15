@@ -1,5 +1,6 @@
 #!/bin/sh
-# posix password manager - developed by acidvegas (https://git.acid.vegas/pass)
+# posix password manager - developed by acidvegas (https://github.com/acidvegas/pass)
+
 umask 077
 export GPG_TTY=$(tty)
 
@@ -67,10 +68,10 @@ menu() {
 			cwd=$cwd/$cmd
 		elif [ -f $cwd/$cmd ]; then
 			if [ $METHOD = "copy" ]; then
-				export PINENTRY_USER_DATA="dmenu" | gpg -d $GPG_OPTS $cwd/$cmd | dmenu "$@" | xclip -selection clipboard
-				sleep 3 && xclip -selection clipboard /dev/nul
+				PINENTRY_USER_DATA="dmenu" gpg -d $GPG_OPTS $cwd/$cmd | dmenu "$@" | xclip -selection clipboard
+				sleep 3 && xclip -selection clipboard /dev/null
 			elif [ $METHOD = "type" ]; then
-				export PINENTRY_USER_DATA="dmenu" | gpg -d $GPG_OPTS $cwd/$cmd | dmenu "$@" | xdotool type --delay 3 "$D"
+				PINENTRY_USER_DATA="dmenu" gpg -d $GPG_OPTS $cwd/$cmd | dmenu "$@" | xdotool type --delay 3 "$D"
 			fi
 			break
 		fi
@@ -111,7 +112,7 @@ if [ "$#" = '1' ]; then
 		command -v pinentry       >/dev/null || { echo "error: missing required package 'pinentry'";       exit 1; }
 		command -v pinentry-dmenu >/dev/null || { echo "error: missing required package 'pinentry-dmenu'"; exit 1; }
 		if [ $METHOD = "copy" ]; then
-			command -v dmenu >/dev/null || { echo "error: missing required package 'xclip'"; exit 1; }
+			command -v xclip >/dev/null || { echo "error: missing required package 'xclip'"; exit 1; }
 		elif [ $METHOD = 'type' ]; then
 			command -v xdotool >/dev/null || { echo "error: missing required package 'xdotool'"; exit 1; }
 		else
