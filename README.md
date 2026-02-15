@@ -75,4 +75,4 @@ save
 
 ___
 
-###### Mirrors for this repository: [acid.vegas](https://git.acid.vegas/pass) • [SuperNETs](https://git.supernets.org/acidvegas/pass) • [GitHub](https://github.com/acidvegas/pass) • [GitLab](https://gitlab.com/acidvegas/pass) • [Codeberg](https://codeberg.org/acidvegas/pass)
+###### Mirrors for this repository: [SuperNETs](https://git.supernets.org/acidvegas/pass) • [GitHub](https://github.com/acidvegas/pass) • [GitLab](https://gitlab.com/acidvegas/pass) • [Codeberg](https://codeberg.org/acidvegas/pass)
