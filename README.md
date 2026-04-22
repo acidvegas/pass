@@ -8,7 +8,7 @@ Similar to [password-store](https://git.zx2c4.com/password-store/about/), but si
 ## Requirements
 - [gpg](https://gnupg.org/)
 - [tree](https://oldmanprogrammer.net/source.php?dir=projects/tree)
-- [oath-toolit](https://www.nongnu.org/oath-toolkit/)     *(optional: required for 2FA)*
+- [oath-toolkit](https://www.nongnu.org/oath-toolkit/)     *(optional: required for 2FA)*
 - [gnupg2-scdaemon](https://linux.die.net/man/1/scdaemon) *(optional: required for smartcard support)*
 
 ## Config
